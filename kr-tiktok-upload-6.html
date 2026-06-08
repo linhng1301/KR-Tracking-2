@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KR · Công cụ Upload Video TikTok</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --ink: #1f2733; --dim: #6b7785; --faint: #9aa5b1;
+    --line: #e7ebef; --soft: #f4f6f8;
+    --plan: #2f6fed; --act: #16a374; --doing: #e0922f; --pause: #b06bd6;
+    --ba: #2f6fed; --dev: #8b5cf6; --uat: #16a374;
+  }
+  body { font-family: 'Be Vietnam Pro', sans-serif; color: var(--ink); background: var(--bg); padding: 22px 18px 36px; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  .head { display: flex; align-items: flex-start; gap: 18px; margin-bottom: 16px; flex-wrap: wrap; }
+  .head-l { flex: 1; min-width: 220px; }
+  .eyebrow { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--act); font-weight: 700; }
+  .title { font-size: 17px; font-weight: 700; line-height: 1.4; margin-top: 5px; }
+  .sub { font-size: 12.5px; color: var(--dim); margin-top: 7px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .pause-pill { font-size: 11px; font-weight: 700; color: var(--pause); background: rgba(176,107,214,.12); border: 1px solid rgba(176,107,214,.3); padding: 3px 10px; border-radius: 20px; }
+
+  .head-r { text-align: right; flex-shrink: 0; }
+  .big { font-size: 34px; font-weight: 700; line-height: 1; color: var(--act); }
+  .big-lab { font-size: 10px; letter-spacing: .4px; text-transform: uppercase; color: var(--faint); font-weight: 600; margin-top: 4px; }
+
+  .bar { height: 10px; border-radius: 6px; background: var(--soft); overflow: hidden; margin-bottom: 7px; }
+  .bar i { display: block; height: 100%; background: var(--act); border-radius: 6px; }
+  .bar-cap { font-size: 11.5px; color: var(--dim); margin-bottom: 20px; }
+
+  .blocker { background: rgba(224,146,47,.07); border: 1px solid rgba(224,146,47,.3); border-radius: 12px; padding: 14px 16px; display: flex; gap: 12px; margin-bottom: 6px; }
+  .blocker .ic { font-size: 18px; line-height: 1.2; }
+  .blocker .bd { font-size: 13px; line-height: 1.6; color: var(--dim); }
+  .blocker .bd b { color: var(--doing); font-weight: 700; }
+  .blocker .bd strong { color: var(--ink); font-weight: 600; }
+
+  .lbl { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--dim); font-weight: 700; margin: 24px 2px 9px; }
+  .lbl em { color: var(--faint); font-style: normal; font-weight: 600; text-transform: none; letter-spacing: 0; }
+
+  .weeks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .wk { border: 1px solid var(--line); border-radius: 10px; padding: 10px 11px; }
+  .wk.cur { border-color: var(--plan); background: rgba(47,111,237,.04); }
+  .wk-n { font-size: 12px; font-weight: 700; }
+  .wk-n span { color: var(--faint); font-weight: 500; font-size: 11px; }
+  .wk-cur { color: var(--plan); font-size: 9px; font-weight: 700; }
+  .wk-t { font-size: 22px; font-weight: 700; margin-top: 6px; color: var(--plan); }
+  .wk-t.tbd { font-size: 15px; color: var(--faint); }
+  .wk-t span { font-size: 11px; color: var(--faint); font-weight: 600; }
+  .wk-note { font-size: 11px; color: var(--dim); margin-top: 8px; line-height: 1.4; }
+
+  .feat { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .task { display: flex; align-items: center; gap: 9px; padding: 11px 14px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+  .task:first-child { border-top: none; }
+  .t-type { font-size: 9.5px; font-weight: 700; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
+  .tt-BA { background: rgba(47,111,237,.12); color: var(--ba); }
+  .tt-DEV { background: rgba(139,92,246,.13); color: var(--dev); }
+  .tt-UAT { background: rgba(22,163,116,.12); color: var(--uat); }
+  .t-name { font-size: 13px; font-weight: 500; flex: 1; min-width: 90px; }
+  .t-name.muted { color: var(--faint); }
+  .t-wk { font-size: 11px; font-weight: 600; color: var(--dim); background: var(--soft); border-radius: 6px; padding: 3px 7px; flex-shrink: 0; }
+  .pill { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; flex-shrink: 0; border: 1px solid transparent; }
+  .st-todo { color: var(--dim); background: #fff; border-color: var(--line); }
+  .st-doing { color: var(--doing); background: rgba(224,146,47,.10); border-color: rgba(224,146,47,.3); }
+  .st-done { color: var(--act); background: rgba(22,163,116,.10); border-color: rgba(22,163,116,.3); }
+  .st-pending { color: var(--pause); background: rgba(176,107,214,.08); border-color: rgba(176,107,214,.28); border-style: dashed; }
+  .t-pct { font-size: 11.5px; font-weight: 700; min-width: 52px; text-align: right; flex-shrink: 0; color: var(--doing); }
+
+  .note-static { padding: 0 14px 11px 14px; font-size: 12px; }
+  .note-static .nt { background: rgba(139,92,246,.06); border: 1px solid rgba(139,92,246,.2); border-radius: 7px; padding: 7px 10px; display: block; color: var(--dev); }
+
+  .foot { font-size: 11px; color: var(--faint); margin-top: 16px; line-height: 1.7; }
+
+  @media (max-width: 640px) { .weeks { grid-template-columns: repeat(2, 1fr); } .head-r { text-align: left; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== HEADER ===== -->
+  <div class="head">
+    <div class="head-l">
+      <div class="eyebrow">Key Result · Công cụ Upload Video TikTok</div>
+      <div class="title">Triển khai &amp; nghiệm thu version 1 công cụ Upload Video TikTok</div>
+      <div class="sub"><span class="pause-pill">⏸ Tạm dừng</span> Dừng sau giai đoạn tài liệu — chờ khảo sát &amp; chốt next step với leader</div>
+    </div>
+    <div class="head-r" style="display:flex; gap:18px;">
+      <div><div class="big" style="color:var(--plan)">25%</div><div class="big-lab">Cần đạt · GĐ tài liệu</div></div>
+      <div><div class="big">12,5%</div><div class="big-lab">Thực tế</div></div>
+    </div>
+  </div>
+
+  <div class="bar"><i style="width:12.5%"></i></div>
+  <div class="bar-cap">Giai đoạn tài liệu BRD &amp; business flow: mốc cần đạt <b style="color:var(--plan)">25%</b>, thực tế đang làm được <b style="color:var(--act)">12,5%</b> (đang triển khai ~50% giai đoạn) · các giai đoạn sau chờ xác định.</div>
+
+  <!-- ===== HỘP LÝ DO TẠM DỪNG ===== -->
+  <div class="blocker">
+    <div class="ic">⏸️</div>
+    <div class="bd">
+      <b>Vì sao tạm dừng:</b> Leader mong muốn build công cụ để <strong>nhiều team cùng dùng</strong> (không chỉ phục vụ 1 team).
+      Do đó cần <strong>khảo sát thêm để ước tính giá trị sử dụng nội bộ</strong> trước khi đầu tư công sức triển khai.
+      Hiện tạm dừng ở giai đoạn tài liệu; <strong>sẽ cập nhật các công việc tiếp theo sau khi trao đổi và chốt next step với leader.</strong>
+    </div>
+  </div>
+
+  <!-- ===== MỐC CẦN ĐẠT THEO TUẦN ===== -->
+  <div class="lbl">Mốc cần đạt theo tuần <em>— kế hoạch</em></div>
+  <div class="weeks">
+    <div class="wk cur">
+      <div class="wk-n">Tuần 1 <span>02–08/06</span> <span class="wk-cur">• NAY</span></div>
+      <div class="wk-t">25<span>%</span></div>
+      <div class="wk-note">Tài liệu BRD &amp; business flow</div>
+    </div>
+    <div class="wk">
+      <div class="wk-n">Tuần 2 <span>09–15/06</span></div>
+      <div class="wk-t tbd">Tạm dừng</div>
+      <div class="wk-note">Chờ khảo sát &amp; next step</div>
+    </div>
+    <div class="wk">
+      <div class="wk-n">Tuần 3 <span>16–22/06</span></div>
+      <div class="wk-t tbd">Chờ</div>
+      <div class="wk-note">Chờ xác định</div>
+    </div>
+    <div class="wk">
+      <div class="wk-n">Tuần 4 <span>23–30/06</span></div>
+      <div class="wk-t tbd">Chờ</div>
+      <div class="wk-note">Chờ xác định</div>
+    </div>
+  </div>
+
+  <!-- ===== CÔNG VIỆC & TIẾN ĐỘ ===== -->
+  <div class="lbl">Công việc &amp; tiến độ</div>
+  <div class="feat">
+
+    <div class="task">
+      <span class="t-type tt-BA">Tài liệu</span>
+      <span class="t-name">Xây dựng tài liệu BRD &amp; business flow</span>
+      <span class="t-wk">T1, T2</span>
+      <span class="pill st-doing">Đang triển khai</span>
+      <span class="t-pct">+12,5%</span>
+    </div>
+
+    <div class="task">
+      <span class="t-type tt-BA">Khảo sát</span>
+      <span class="t-name muted">Khảo sát nhu cầu &amp; ước tính giá trị sử dụng nội bộ (đa team)</span>
+      <span class="t-wk">—</span>
+      <span class="pill st-pending">Chờ xác định</span>
+    </div>
+
+    <div class="task">
+      <span class="t-type tt-DEV">Dev</span>
+      <span class="t-name muted">Dev triển khai version 1</span>
+      <span class="t-wk">—</span>
+      <span class="pill st-pending">Chờ xác định</span>
+    </div>
+    <div class="note-static"><span class="nt">💬 Trao đổi với dev: chưa cập nhật (sau khi chốt phạm vi với leader)</span></div>
+
+    <div class="task">
+      <span class="t-type tt-UAT">Nghiệm thu</span>
+      <span class="t-name muted">Nghiệm thu version 1</span>
+      <span class="t-wk">—</span>
+      <span class="pill st-pending">Chờ xác định</span>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    • <b style="color:var(--pause)">Chờ xác định</b> = công việc đề xuất, chưa chốt tuần/khối lượng — sẽ cập nhật sau khi trao đổi với leader.<br>
+    • Giai đoạn tài liệu khi hoàn tất = 25% OKR; hiện đang triển khai ~50% nên thực tế = 12,5%. Khi có next step sẽ bổ sung công việc &amp; cập nhật %.
+  </div>
+
+</div>
+</body>
+</html>
